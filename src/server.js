@@ -1,16 +1,25 @@
+/* ----- SETUP ----- */
+/* Imports */
 const express = require("express");
 const server = express();
-module.exports = server;
-
 const staticHandler = express.static("public");
 const bodyParser = express.urlencoded();
+
+/* Use */
 server.use(staticHandler);
+server.use(logger);
+
+/* Functions */
 function logger(req, res, next) {
   console.log(`${req.method} ${req.url}`);
 	next();
 }
-server.use(logger);
 
+/* Exports */
+module.exports = server;
+
+/* ----- REQUESTS ----- */
+/* Home */
 server.get("/", (req, res) => {
 	res.send(`<!doctype html>
 		<html>
@@ -26,6 +35,7 @@ server.get("/", (req, res) => {
 	`)
 });
 
+/* Colour */
 server.get("/colour", (req, res) => {
 	const hex = req.query.hex || `ffffff`;
   res.send(`
@@ -46,8 +56,7 @@ server.get("/colour", (req, res) => {
 	`);
 });
 
-/* CHEESE */
-
+/* Cheese */
 let cheeses = [];
 
 server.get("/cheese", (req, res) => {
@@ -66,7 +75,6 @@ server.get("/cheese", (req, res) => {
 
 		<button>Cheese</button>
 	</form>`;
-
 	const table = `<table>
 		<tr>
 			<th>Cheese</th> <th>Score</th>
@@ -75,21 +83,15 @@ server.get("/cheese", (req, res) => {
 			<td>${cheese.name}</td> <td>${cheese.score}</td>
 		</tr>`)}
 	</table>`
-
 	const listItems = cheeses.map((cheese) => `
 		<li>${cheese.name} | ${cheese.score}</li>
 	`);
-
 	const list = `<ul>${listItems.join("")}</ul>`;
 
 	res.send(`${form} ${list} ${table}`);
 });
 
 server.post("/cheese", bodyParser, (req, res) => {
-	cheeses.push({
-		name: req.body.name,
-		score: req.body.rating,
-	});
-
+	cheeses.push({name: req.body.name, score: req.body.rating,});
 	res.redirect(`/cheese`);
 });
