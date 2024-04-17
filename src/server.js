@@ -8,7 +8,7 @@ server.use(staticHandler);
 function logger(req, res, next) {
   console.log(`${req.method} ${req.url}`);
 	next();
-};
+}
 server.use(logger);
 
 server.get("/", (req, res) => {
